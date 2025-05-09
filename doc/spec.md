@@ -1,84 +1,3 @@
-感謝您決定採用 Supabase Auth 作為 Threads Clone 專案的認證系統！這將確保與現有資料庫結構和 RLS（Row-Level Security）政策的無縫整合，同時簡化認證流程並提升安全性。以下，我將仔細檢查您的規格文件（`specification.md`），針對使用 Supabase Auth 進行修正，移除與 JJWT 或傳統認證相關的不一致內容，並確保內容符合您的需求（詳細、結構化、專業且無冗餘）。修正後的規格文件將以完整的 Markdown 格式輸出，並附上修正說明以解釋每處變更的理由。
-
----
-
-### 修正說明
-在檢查您的規格文件後，我發現以下幾個需要修正的問題，這些問題主要與認證方式（從 JJWT 切換到 Supabase Auth）、資料庫結構一致性、RLS 配置以及環境變數相關。以下是修正的詳細說明：
-
-1. **認證相關修正（2.1 使用者認證）**：
-  - **問題**：
-    - 原規格提到「密碼使用 bcrypt 雜湊」和「回應：JWT（有效期 24 小時）」，這暗示後端自行處理密碼雜湊和 JWT 生成，與 Supabase Auth 的托管認證不一致。
-    - 「發送驗證郵件（含唯一連結，有效期 24 小時）」假設後端自行實現郵件驗證，而 Supabase Auth 提供內建的郵件驗證功能。
-    - 未明確說明 Supabase Auth 的角色（`auth.uid()`）和與 RLS 的整合。
-  - **修正**：
-    - 明確指定使用 Supabase Auth 處理註冊、登入和 JWT 生成。
-    - 移除「bcrypt 雜湊」描述，因為 Supabase Auth 內部使用 bcrypt，後端無需自行實現。
-    - 調整驗證郵件流程，說明 Supabase Auth 的內建功能（發送驗證郵件，無需自定義 `verification_tokens` 表）。
-    - 說明 JWT 由 Supabase 生成，包含 `sub`（`auth.uid()`）和 `role`，用於 RLS。
-    - 保留未登入使用者的功能（查看時間軸等），但確保與 RLS 一致。
-
-2. **資料庫結構修正（4.1 資料庫結構）**：
-  - **問題**：
-    - `users` 表包含 `password_hash` 欄位，這與 Supabase Auth 不一致，因為密碼儲存在 Supabase 的 `auth.users` 表中。
-    - `verification_tokens` 表假設後端自行管理驗證 token，而 Supabase Auth 內建郵件驗證，無需此表。
-    - `users.id` 使用 `uuid_generate_v4()`，但應與 `auth.users.id` 同步（Supabase 的 UUID）。
-  - **修正**：
-    - 移除 `users.password_hash` 欄位，添加說明與 `auth.users` 同步。
-    - 移除 `verification_tokens` 表，因為 Supabase Auth 處理驗證流程。
-    - 更新 `users.id` 的描述，確保與 `auth.users.id` 一致。
-    - 保留其他表（`posts`、`replies`、`likes`、`follows`）不變，因為它們與 Supabase Auth 兼容。
-
-3. **RLS 配置修正（4.3 RLS）**：
-  - **問題**：
-    - 原 RLS 政策正確使用 `auth.uid()`，但未明確說明 Supabase Auth 的角色（`authenticated`、`anon`）和 JWT 傳遞。
-    - `users` 表的 RLS 政策未涵蓋更新個人資料（如 `bio`）的場景。
-    - `follows` 表缺少防止追蹤自己的 RLS 檢查。
-  - **修正**：
-    - 添加 Supabase Auth 的角色說明（`anon` 用於公開訪問，`authenticated` 用於登入使用者）。
-    - 在 `users` 表添加更新政策的 RLS，允許使用者修改自己的 `bio` 和 `username`。
-    - 在 `follows` 表添加 RLS 檢查，防止 `follower_id = followed_id`。
-    - 明確說明 JWT 透過 Supabase 客戶端或 API 傳遞，確保 `auth.uid()` 可用。
-
-4. **API 端點修正（4.4 API 端點）**：
-  - **問題**：
-    - `POST /api/register` 和 `POST /api/login` 未明確使用 Supabase Auth API。
-    - `GET /api/verify?token=uuid` 假設自定義驗證 token，而 Supabase 使用郵件連結（無需後端端點）。
-    - 未說明前端和後端如何傳遞 Supabase JWT。
-  - **修正**：
-    - 更新 `POST /api/register` 和 `POST /api/login` 的描述，說明使用 Supabase Auth API（`supabase.auth.signUp` 和 `signInWithPassword`）。
-    - 移除 `GET /api/verify`，因為 Supabase 的驗證連結直接處理（無需後端端點）。
-    - 添加說明：前端使用 `@supabase/supabase-js` 獲取 JWT，後端透過 Supabase 客戶端或 REST API 傳遞 JWT。
-
-5. **環境變數修正（8. 交付方式、附錄）**：
-  - **問題**：
-    - `JWT_SECRET` 環境變數無用，因為 Supabase Auth 使用內部密鑰生成 JWT。
-    - `EMAIL_SERVICE_API_KEY` 假設使用第三方郵件服務（如 SendGrid），而 Supabase Auth 內建郵件發送。
-  - **修正**：
-    - 移除 `JWT_SECRET` 和 `EMAIL_SERVICE_API_KEY`，僅保留 `SUPABASE_URL` 和 `SUPABASE_KEY`。
-    - 更新附錄中的環境變數範例，確保一致。
-
-6. **其他細微調整**：
-  - **系統架構（3.2）**：
-    - 原架構圖提到「JDBC」，但 Supabase 推薦使用 REST API（PostgREST）或客戶端（如 `supabase-java`）以支援 RLS。
-    - 更新架構圖和描述，強調 Supabase 的 PostgREST API 和客戶端。
-  - **測試計劃（6. 測試計劃）**：
-    - 原測試範例假設後端自行管理認證，需更新為測試 Supabase Auth 的行為。
-    - 添加 Supabase 客戶端的整合測試範例。
-  - **開發順序（7. 開發順序）**：
-    - 調整階段 2（後端核心）的認證實現，移除 JJWT 相關步驟，聚焦 Supabase Auth。
-  - **資料庫結構圖（附錄）**：
-    - 移除 `verification_tokens` 表的關係，因為不再需要。
-
-7. **一致性增強**：
-  - 確保術語一致，例如使用「Supabase Auth」而非「認證」或「JWT」。
-  - 簡化冗餘描述，例如移除重複的「安全性」要求（已在非功能需求中涵蓋）。
-  - 添加 Supabase Auth 的背景說明，幫助無經驗的開發者理解。
-
----
-
-### 修正後的規格文件
-
-```markdown
 # Threads Clone 規格文件
 
 ## 1. 專案概述
@@ -523,24 +442,81 @@ CREATE INDEX idx_follows_followed_id ON follows(followed_id);
 ## 8. 交付方式
 - **GitHub 儲存庫**：
   - 結構：
-    ```
-    /threads-clone
-    ├── /backend
-    │   ├── src/main/java
-    │   ├── src/test/java
-    │   ├── pom.xml
-    │   └── README.md
-    ├── /frontend
-    │   ├── src
-    │   ├── public
-    │   ├── package.json
-    │   └── README.md
-    ├── /docs
-    │   ├── specification.md
-    │   ├── api-docs.yaml
-    │   └── database-schema.sql
-    └── README.md
-    ```
+```
+threads-clone/
+├── backend/                                    # Spring Boot 後端專案
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/threadsclone/backend/
+│   │   │   │   ├── controller/              # 控制器
+│   │   │   │   │   ├── AdminController.java
+│   │   │   │   │   ├── FollowController.java
+│   │   │   │   │   ├── NotificationController.java
+│   │   │   │   │   ├── PostController.java
+│   │   │   │   │   └── UserController.java
+│   │   │   │   ├── dto/                    # 資料傳輸對象
+│   │   │   │   │   ├── NotificationResponse.java
+│   │   │   │   │   ├── PostRequest.java
+│   │   │   │   │   ├── PostResponse.java
+│   │   │   │   │   ├── UserRequest.java
+│   │   │   │   │   └── UserResponse.java
+│   │   │   │   ├── entity/                 # 實體類
+│   │   │   │   │   ├── Follow.java
+│   │   │   │   │   ├── Notification.java
+│   │   │   │   │   └── Post.java
+│   │   │   │   ├── service/                # 服務邏輯
+│   │   │   │   │   ├── AdminService.java
+│   │   │   │   │   ├── FollowService.java
+│   │   │   │   │   ├── NotificationService.java
+│   │   │   │   │   ├── PostService.java
+│   │   │   │   │   └── UserService.java
+│   │   │   ├── resources/
+│   │   │   │   └── application.properties  # Supabase 配置
+│   │   ├── test/
+│   │   │   ├── java/com/threadsclone/backend/controller/
+│   │   │   │   ├── AdminControllerTest.java
+│   │   │   │   ├── AdminIntegrationTest.java
+│   │   │   │   ├── FollowControllerTest.java
+│   │   │   │   ├── FollowIntegrationTest.java
+│   │   │   │   ├── NotificationControllerTest.java
+│   │   │   │   ├── NotificationIntegrationTest.java
+│   │   │   │   ├── PostControllerTest.java
+│   │   │   │   ├── PostIntegrationTest.java
+│   │   │   │   ├── UserControllerTest.java
+│   │   │   │   └── UserIntegrationTest.java
+│   ├── pom.xml                             # Maven 依賴
+│   └── database/
+│       ├── database-schema.sql             # 資料庫結構（users, posts, replies, likes, follows）
+│       └── notifications.sql              # 通知表和觸發器
+├── frontend/                                  # React 前端專案
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Timeline.jsx               # 時間軸組件
+│   │   │   └── Timeline.test.jsx          # 時間軸測試
+│   │   ├── lib/
+│   │   │   └── supabase.js                # Supabase 客戶端配置
+│   │   ├── pages/
+│   │   │   ├── AdminPanel.jsx             # 管理員面板
+│   │   │   ├── AdminPanel.test.jsx
+│   │   │   ├── Notifications.jsx          # 通知頁面
+│   │   │   ├── Notifications.test.jsx
+│   │   │   ├── Profile.jsx                # 個人資料頁面
+│   │   │   ├── Profile.test.jsx
+│   │   │   ├── Search.jsx                 # 搜索頁面
+│   │   │   └── Search.test.jsx
+│   │   ├── App.jsx                        # 路由配置
+│   │   ├── index.jsx                      # 入口文件
+│   │   └── index.css                      # 全局樣式（Tailwind CSS）
+│   ├── public/
+│   │   ├── index.html                     # HTML 模板
+│   │   └── favicon.ico                    # 圖標
+│   ├── package.json                       # Node.js 依賴
+│   ├── tailwind.config.js                 # Tailwind CSS 配置
+│   └── vite.config.js                     # Vite 配置
+├── README.md                              # 專案說明
+└── .gitignore                             # Git 忽略文件
+```
+
   - 包含 CI/CD（GitHub Actions）。
 - **規格文件**（`docs/specification.md`）：
   - 功能、資料庫、API、測試、未來功能。
@@ -621,16 +597,3 @@ SUPABASE_KEY=<key>
   - 初始化專案，匯入 `database-schema.sql`。
   - 配置 RLS 和環境變數。
   - 啟用 Supabase Auth 的郵件驗證（儀表板設置）。
-```
-
----
-
-### 修正後的改進
-修正後的規格文件具有以下改進：
-- **一致性**：所有認證邏輯統一使用 Supabase Auth，移除 JJWT 和自定義驗證的痕跡。
-- **清晰性**：明確說明 Supabase Auth 的角色（`anon`、`authenticated`）、JWT 傳遞方式和 RLS 整合。
-- **簡潔性**：移除不必要的表（`verification_tokens`）和環境變數（`JWT_SECRET`、`EMAIL_SERVICE_API_KEY`）。
-- **安全性**：依賴 Supabase 的托管認證，確保密碼雜湊和 JWT 簽名符合最佳實踐。
-- **開發者友好**：提供 Supabase Auth 的背景說明、範例代碼和測試案例，幫助無經驗的開發者快速上手。
-
-如果您有進一步的需求（例如添加特定功能的實現細節、調整某部分的描述，或需要代碼範例），請告訴我，我可以進一步完善或提供相關支援！
