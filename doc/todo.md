@@ -1,15 +1,14 @@
-
-
-
 # Threads Clone 專案待辦事項
 
 這份待辦清單涵蓋 Threads Clone 社交媒體平台的所有開發階段，從基礎設置到管理員功能。每个任務包含具體工作項目，使用 `[ ]` 標記進度。
 
 ## 階段 1：專案設置與資料庫結構
+
 目標：初始化前端和後端專案，設置 Supabase 資料庫並定義核心表結構。
 
 ### 迭代 1.1：專案初始化
-- [ ] 初始化前端 React 專案（使用 Vite）
+
+- [x] 初始化前端 React 專案（使用 Vite）
   - 創建 `frontend/` 目錄，運行 `npm create vite@latest`。
   - 配置 Tailwind CSS（`tailwind.config.js`）。
   - 設置 ESLint 和 Prettier 確保程式碼一致性。
@@ -22,6 +21,7 @@
   - 初始化 Git，提交初始專案結構。
 
 ### 迭代 1.2：資料庫結構
+
 - [ ] 設計並創建核心資料庫表
   - 創建 `database/database-schema.sql`：
     - `users` 表：儲存用戶資料（`id`, `email`, `username`, `bio`, `role` 等）。
@@ -44,9 +44,11 @@
   - 插入測試資料，驗證 RLS 政策。
 
 ## 階段 2：用戶認證與貼文
+
 目標：實現用戶認證（登錄/註冊）並支援貼文創建和時間軸顯示。
 
 ### 迭代 2.1：用戶認證
+
 - [ ] 配置 Supabase 認證
   - 創建 `frontend/src/lib/supabase.js`，初始化 Supabase 客戶端。
   - 配置環境變數（`.env`）儲存 `SUPABASE_URL` 和 `SUPABASE_ANON_KEY`。
@@ -62,6 +64,7 @@
   - 手動測試：確保登錄後重定向到時間軸，註冊後自動登錄。
 
 ### 迭代 2.2：貼文 API
+
 - [ ] 實現貼文創建和刪除 API
   - 創建 `backend/src/main/java/com/threadsclone/backend/controller/PostController.java`：
     - `POST /api/posts`：創建貼文。
@@ -80,6 +83,7 @@
     - 整合測試：驗證資料庫操作和 RLS。
 
 ### 迭代 2.3：前端貼文與時間軸
+
 - [ ] 實現時間軸頁面
   - 創建 `frontend/src/components/Timeline.jsx` 和 `Timeline.test.jsx`：
     - 顯示貼文列表（`GET /api/timeline`）。
@@ -90,9 +94,11 @@
   - 手動測試：確保貼文卡片樣式（Tailwind CSS）一致，滾動加載順暢。
 
 ## 階段 3：回覆與點讚
+
 目標：實現貼文回覆和點讚功能，增強用戶交互。
 
 ### 迭代 3.1：回覆 API
+
 - [ ] 實現回覆 API
   - 更新 `PostController.java`：
     - `POST /api/posts/:post_id/replies`：創建回覆。
@@ -104,6 +110,7 @@
     - 檢查 RLS（僅用戶可創建回覆）。
 
 ### 迭代 3.2：點讚 API
+
 - [ ] 實現點讚 API
   - 更新 `PostController.java`：
     - `POST /api/posts/:post_id/like`：添加點讚。
@@ -116,6 +123,7 @@
     - 檢查 RLS（僅用戶可管理自己的點讚）。
 
 ### 迭代 3.3：前端回覆與點讚
+
 - [ ] 更新時間軸組件
   - 更新 `frontend/src/components/Timeline.jsx`：
     - 添加回覆表單（`POST /api/posts/:post_id/replies`）。
@@ -127,9 +135,11 @@
   - 手動測試：驗證回覆列表渲染、點讚數更新和 Tailwind CSS 樣式。
 
 ## 階段 4：用戶追蹤與個人資料
+
 目標：實現用戶追蹤功能和個人資料頁面。
 
 ### 迭代 4.1：追蹤 API
+
 - [ ] 實現追蹤 API
   - 創建 `backend/src/main/java/com/threadsclone/backend/controller/FollowController.java`：
     - `POST /api/users/:user_id/follow`：追蹤用戶。
@@ -143,6 +153,7 @@
     - 整合測試：驗證 `follows` 表記錄。
 
 ### 迭代 4.2：個人資料 API
+
 - [ ] 實現個人資料 API
   - 創建 `backend/src/main/java/com/threadsclone/backend/controller/UserController.java`：
     - `GET /api/users/:user_id`：查看用戶資料。
@@ -156,6 +167,7 @@
     - 整合測試：驗證 RLS 和資料更新。
 
 ### 迭代 4.3：前端個人資料
+
 - [ ] 實現個人資料頁面
   - 創建 `frontend/src/pages/Profile.jsx` 和 `Profile.test.jsx`：
     - 顯示用戶資料（`GET /api/users/:user_id`）。
@@ -166,9 +178,11 @@
   - 手動測試：驗證頁面樣式（Tailwind CSS）和交互。
 
 ## 階段 5：搜索與通知
+
 目標：實現貼文搜索和通知系統。
 
 ### 迭代 5.1：搜索 API
+
 - [ ] 實現貼文搜索 API
   - 更新 `PostController.java`：
     - `GET /api/search`：全文搜索貼文（使用 `posts.content_tsv`）。
@@ -179,6 +193,7 @@
     - 驗證搜索結果和分頁。
 
 ### 迭代 5.2：前端搜索
+
 - [ ] 實現搜索頁面
   - 創建 `frontend/src/pages/Search.jsx` 和 `Search.test.jsx`：
     - 支援關鍵字輸入，顯示搜索結果（`GET /api/search`）。
@@ -188,6 +203,7 @@
   - 手動測試：驗證搜索輸入和貼文卡片樣式。
 
 ### 迭代 5.3：通知系統
+
 - [ ] 創建通知表和觸發器
   - 創建 `database/notifications.sql`：
     - `notifications` 表：儲存點讚和回覆通知。
@@ -205,6 +221,7 @@
     - 整合測試：驗證通知生成和 RLS。
 
 ### 迭代 5.4：前端通知
+
 - [ ] 實現通知頁面
   - 創建 `frontend/src/pages/Notifications.jsx` 和 `Notifications.test.jsx`：
     - 顯示通知列表（`GET /api/notifications`）。
@@ -214,9 +231,11 @@
   - 手動測試：驗證通知樣式和分頁。
 
 ## 階段 6：管理員功能
+
 目標：實現管理員功能，支援查看和刪除所有貼文。
 
 ### 迭代 6.1：管理員 API
+
 - [ ] 實現管理員 API
   - 創建 `backend/src/main/java/com/threadsclone/backend/controller/AdminController.java`：
     - `GET /api/admin/posts`：查看所有貼文（可篩選已刪除/匿名）。
@@ -229,6 +248,7 @@
     - 整合測試：驗證貼文檢索和刪除。
 
 ### 迭代 6.2：前端管理員面板
+
 - [ ] 實現管理員面板
   - 創建 `frontend/src/pages/AdminPanel.jsx` 和 `AdminPanel.test.jsx`：
     - 顯示貼文列表（`GET /api/admin/posts`）。
@@ -239,6 +259,7 @@
   - 手動測試：驗證頁面樣式和篩選交互。
 
 ## 其他任務
+
 - [ ] 配置路由
   - 更新 `frontend/src/App.jsx`：
     - 定義路由：`/login`, `/signup`, `/timeline`, `/profile/:user_id`, `/search`, `/notifications`, `/admin`。
@@ -254,18 +275,19 @@
   - 運行所有單元測試和整合測試。
   - 手動測試所有功能（認證、貼文、回覆、點讚、追蹤、個人資料、搜索、通知、管理員）。
 
-
 ---
 
 ## 說明與使用指南
 
 ### 文件結構
+
 - **階段與迭代**：每個階段按功能劃分（例如認證、貼文、管理員），迭代聚焦具體實現（例如 API、前端）。
 - **工作項目**：詳細列出每個任務，涵蓋程式碼實現、測試和手動驗證。
 - **進度追蹤**：使用 `[ ]`（未完成）或 `[x]`（已完成）標記進度，您可直接編輯 Markdown 文件。
 - **檔案參考**：對應前述資料夾結構（例如 `frontend/src/components/Timeline.jsx`），確保與專案一致。
 
 ### 如何使用
+
 1. **複製文件**：將上述內容保存為 `todo.markdown`，放置於專案根目錄（`threads-clone/`）。
 2. **追蹤進度**：在開發過程中，完成任務後將 `[ ]` 改為 `[x]`，例如：
    ```markdown
@@ -273,22 +295,24 @@
    ```
 3. **優先級排序**：按階段順序執行，確保依賴關係（例如資料庫結構先於 API）。
 4. **檢查點**：
-    - 每個迭代完成後，運行相關測試（單元測試和整合測試）。
-    - 階段完成後，進行手動測試，驗證 UI 和功能。
+   - 每個迭代完成後，運行相關測試（單元測試和整合測試）。
+   - 階段完成後，進行手動測試，驗證 UI 和功能。
 
 ### 與專案整合
+
 - **資料庫**：依賴 `database-schema.sql` 和 `notifications.sql`，確保 RLS 和觸發器正確設置。
 - **前端**：所有頁面（`Timeline.jsx`, `Profile.jsx` 等）使用 Tailwind CSS，與 `tailwind.config.js` 一致。
 - **後端**：API 實現（`PostController.java` 等）與 Supabase Postgrest 交互，依賴 `application.properties` 配置。
 - **測試**：每個功能包含單元測試（例如 `Timeline.test.jsx`）和整合測試（例如 `PostIntegrationTest.java`）。
 
 ## 下一步建議
+
 - **擴展功能**：
-    - [ ] 添加私訊功能（新表 `messages`，API `POST /api/messages`）。
-    - [ ] 實現貼文標籤（新表 `tags`，支援 `GET /api/tags/:tag`）。
+  - [ ] 添加私訊功能（新表 `messages`，API `POST /api/messages`）。
+  - [ ] 實現貼文標籤（新表 `tags`，支援 `GET /api/tags/:tag`）。
 - **效能優化**：
-    - [ ] 在 `GET /api/timeline` 中引入快取（Redis）。
-    - [ ] 優化前端無限滾動，減少 API 呼叫。
+  - [ ] 在 `GET /api/timeline` 中引入快取（Redis）。
+  - [ ] 優化前端無限滾動，減少 API 呼叫。
 - **部署與監控**：
-    - [ ] 配置 CI/CD（GitHub Actions），自動運行測試和部署。
-    - [ ] 添加日誌（例如使用 Logback）監控後端錯誤。
+  - [ ] 配置 CI/CD（GitHub Actions），自動運行測試和部署。
+  - [ ] 添加日誌（例如使用 Logback）監控後端錯誤。
