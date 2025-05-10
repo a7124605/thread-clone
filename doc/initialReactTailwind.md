@@ -2,7 +2,6 @@ Vite + React + Tailwind CSS v4.1 初始化指南
 本文件指導如何初始化一個 Vite + React 專案，安裝 Tailwind CSS v4.1（使用 @tailwindcss/vite 插件），並啟動開發伺服器。適用於 Threads Clone 社交媒體平台 的前端初始化（階段 1，迭代 1.1）。
 先決條件
 
-test
 Node.js：版本 16.x 或 18.x（建議使用 nvm 管理）。
 npm：版本 8.x 或以上。
 Git：用於版本控制。
