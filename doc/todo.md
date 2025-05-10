@@ -22,7 +22,7 @@
 
 ### 迭代 1.2：資料庫結構
 
-- [ ] 設計並創建核心資料庫表
+- [x] 設計並創建核心資料庫表
   - 創建 `database/database-schema.sql`：
     - `users` 表：儲存用戶資料（`id`, `email`, `username`, `bio`, `role` 等）。
     - `posts` 表：儲存貼文（`id`, `content`, `image_url`, `user_id`, `is_anonymous` 等）。
@@ -37,9 +37,9 @@
     - `Users manage own replies`
     - `Users manage own likes`
     - `Users manage own follows`
-- [ ] 設置觸發器
+- [x] 設置觸發器
   - 創建 `handle_new_user` 函數，自動為新用戶設置預設 `username` 和 `role`。
-- [ ] 測試資料庫結構
+- [x] 測試資料庫結構
   - 使用 Supabase 儀表板或 CLI 應用 `database-schema.sql`。
   - 插入測試資料，驗證 RLS 政策。
 

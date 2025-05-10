@@ -1,10 +1,10 @@
-package com.junior.thread_clone;
+package com.threadclone.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ThreadCloneApplicationTests {
+class BackendApplicationTests {
 
 	@Test
 	void contextLoads() {

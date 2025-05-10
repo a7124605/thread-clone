@@ -1,13 +1,13 @@
-package com.junior.thread_clone;
+package com.threadclone.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ThreadCloneApplication {
+public class BackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ThreadCloneApplication.class, args);
+		SpringApplication.run(BackendApplication.class, args);
 	}
 
 }
